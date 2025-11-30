@@ -8,18 +8,16 @@ import {
 } from "react-native";
 import Animated, {
   type AnimationCallback,
-  Easing,
-  type EasingFunction,
-  type EasingFunctionFactory,
   FadeIn,
   LinearTransition,
   ReduceMotion,
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
-  withTiming,
+  withSpring,
+  WithSpringConfig,
 } from "react-native-reanimated";
 import { COMPACT_NOTATIONS, DIGIT_VARIANTS, NUMBER_ARRAY } from "../constants";
+import { scheduleOnRN } from "react-native-worklets";
 
 export type DigitVariant = "sign" | "number" | "compact" | "dot" | "comma";
 
@@ -37,13 +35,17 @@ export interface AnimatedDigitProps
   /** Props for the primary text component used in the component. */
   textProps?: Omit<React.ComponentProps<typeof Text>, "style"> | undefined;
   /** Props for the number text components. */
-  numberTextProps?: Omit<React.ComponentProps<typeof Text>, "style"> | undefined;
+  numberTextProps?:
+    | Omit<React.ComponentProps<typeof Text>, "style">
+    | undefined;
   /** Props for the comma text component, if used. */
   commaTextProps?: Omit<React.ComponentProps<typeof Text>, "style"> | undefined;
   /** Props for the dot (decimal point) text component, if used. */
   dotTextProps?: Omit<React.ComponentProps<typeof Text>, "style"> | undefined;
   /** Props for the compact notation text components (K, M, B, T). */
-  compactNotationTextProps?: Omit<React.ComponentProps<typeof Text>, "style"> | undefined;
+  compactNotationTextProps?:
+    | Omit<React.ComponentProps<typeof Text>, "style">
+    | undefined;
   /** Props for the sign text component, if used. */
   signTextProps?: Omit<React.ComponentProps<typeof Text>, "style"> | undefined;
   /** Style for the primary text component. */
@@ -59,15 +61,13 @@ export interface AnimatedDigitProps
   /** Style for the sign text component, if used. */
   signStyle?: StyleProp<TextStyle>;
   /** Configuration for the animation moving the digits up and down. Defaults to a bounce animation with 500ms duration. */
-  spinningAnimationConfig?: {
-    duration?: number;
-    reduceMotion?: ReduceMotion;
-    easing?: EasingFunction | EasingFunctionFactory;
-  } | undefined;
+  spinningAnimationConfig?: WithSpringConfig | undefined;
   /** Callback function invoked when the animation completes. */
   animationCallback?: AnimationCallback | undefined;
   /** Custom function to animate the value change. Defaults to a bounce animation. */
-  animateToNewValue?: ((newValue: number, variant?: DigitVariant) => number) | undefined;
+  animateToNewValue?:
+    | ((newValue: number, variant?: DigitVariant) => number)
+    | undefined;
 }
 
 /**
@@ -78,16 +78,11 @@ export const AnimatedDigit: React.FC<AnimatedDigitProps> = ({
   value,
   height,
   containerStyle,
-  spinningAnimationConfig,
+  spinningAnimationConfig = { reduceMotion: ReduceMotion.Never },
   animationCallback = () => {},
   animateToNewValue = (newValue, variant) =>
-    withTiming(
-      -newValue,
-      spinningAnimationConfig || {
-        duration: variant === "number" ? 600 : 100,
-        easing: Easing.elastic(1),
-      },
-      (finished, current) => runOnJS(animationCallback)?.(finished, current)
+    withSpring(-newValue, spinningAnimationConfig, (finished, current) =>
+      scheduleOnRN(animationCallback, finished, current)
     ),
   textProps,
   commaTextProps,
