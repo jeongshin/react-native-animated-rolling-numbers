@@ -55,5 +55,8 @@
     "react-native-reanimated": ">=4.0.0",
     "react-native-worklets": ">=0.6.0"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "packageManager": "yarn@4.10.2"
 }
