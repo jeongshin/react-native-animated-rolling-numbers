@@ -1,5 +1,7 @@
 # React Native Animated Rolling numbers
 
+> **Note**: This is a fork of [react-native-animated-rolling-numbers](https://github.com/BouarourMohammed/react-native-animated-rolling-numbers) updated to support `react-native-reanimated` version 4.x and above.
+
 ✨ `react-native-animated-rolling-numbers` is a React Native component that animates numbers and compact notations (K, M, B, T) with customizable styles and animations. It's designed to create smooth, eye-catching transitions between numeric values.
 
 [![React Native Animated rolling numbers Example](https://github.com/user-attachments/assets/48b10447-5978-4a51-9715-229631a939d5)](https://github.com/user-attachments/assets/48b10447-5978-4a51-9715-229631a939d5)
