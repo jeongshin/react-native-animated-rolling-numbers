@@ -1,6 +1,12 @@
 {
   "compilerOptions": {
     "target": "es5",
+    // Emit ESM, not CommonJS. With CJS output, tsc rewrites `scheduleOnRN(...)` into
+    // `react_native_worklets_1.scheduleOnRN(...)`, so the worklets babel plugin captures the
+    // whole react-native-worklets module object in the worklet closure — serializing it hits
+    // the NativeWorklets host module and crashes with
+    // "[Worklets] Cannot copy value of type `NativeWorklets`".
+    "module": "esnext",
     "lib": ["dom", "es2015"],
     "allowJs": true,
     "jsx": "react",
