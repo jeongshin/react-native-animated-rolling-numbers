@@ -100,12 +100,9 @@ export const AnimatedDigit: React.FC<AnimatedDigitProps> = ({
 }) => {
   const isNumeric = !isNaN(Number(value));
   const animatedValue = useSharedValue(isNumeric ? Number(value) : 0);
-  const animatedStyle = useAnimatedStyle(
-    () => ({
-      transform: [{ translateY: animatedValue.value * (height || 0) }],
-    }),
-    [height]
-  );
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: animatedValue.value * (height || 0) }],
+  }));
 
   const othersTextStyle = useMemo(
     () => ({
